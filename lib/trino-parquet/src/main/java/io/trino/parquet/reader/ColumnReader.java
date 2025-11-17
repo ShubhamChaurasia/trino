@@ -13,6 +13,8 @@
  */
 package io.trino.parquet.reader;
 
+import io.trino.parquet.DictionaryPage;
+
 import java.util.Optional;
 
 public interface ColumnReader
@@ -20,6 +22,8 @@ public interface ColumnReader
     boolean hasPageReader();
 
     void setPageReader(PageReader pageReader, Optional<FilteredRowRanges> rowRanges);
+
+    Optional<DictionaryPage> getDictionaryPage();
 
     void prepareNextRead(int batchSize);
 

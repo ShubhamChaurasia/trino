@@ -56,6 +56,8 @@ public abstract class AbstractColumnReader<BufferType>
     @Nullable
     protected DictionaryDecoder<BufferType> dictionaryDecoder;
     private boolean produceDictionaryBlock;
+    @Nullable
+    private DictionaryPage dictionaryPage;
 
     public AbstractColumnReader(
             PrimitiveField field,
@@ -77,6 +79,7 @@ public abstract class AbstractColumnReader<BufferType>
         // if it is partly or completely dictionary encoded. At most one dictionary page
         // can be placed in a column chunk.
         DictionaryPage dictionaryPage = pageReader.readDictionaryPage();
+        this.dictionaryPage = dictionaryPage;
 
         // For dictionary based encodings - https://github.com/apache/parquet-format/blob/master/Encodings.md
         if (dictionaryPage != null) {
@@ -85,6 +88,12 @@ public abstract class AbstractColumnReader<BufferType>
             produceDictionaryBlock = shouldProduceDictionaryBlock(rowRanges);
         }
         this.rowRanges = createRowRangesIterator(rowRanges);
+    }
+
+    @Override
+    public Optional<DictionaryPage> getDictionaryPage()
+    {
+        return Optional.ofNullable(dictionaryPage);
     }
 
     protected abstract boolean isNonNull();
